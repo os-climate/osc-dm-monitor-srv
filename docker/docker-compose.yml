@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+
+    bgs-dm-monitor-srv:
+        image: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
+        hostname: ${HOSTNAME}
+        ports:
+        # OUTSIDE:INSIDE
+        - 33000:8000
+        volumes:
+        - ${PROJECT_DIR}/config:/app/config
+        networks:
+        - localnet
+
+networks:
+    localnet:
+        external: true

@@ -1,0 +1,6 @@
+monitor:
+  interval_seconds: 5
+
+proxy:
+  host: "bgs-dm-proxy-srv"
+  port: 8000
