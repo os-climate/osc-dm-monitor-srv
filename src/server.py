@@ -33,8 +33,8 @@ DEFAULT_CONFIGURATION="./config/config.yaml"
 STATE_CONFIGURATION="state-configuration"
 STATE_STATISTICS="state-statistics"
 
-SERVICE_REGISTRAR="bgs-dm-registrar-srv"
-SERVICE_SEARCH="bgs-dm-search-srv"
+SERVICE_REGISTRAR="osc-dm-registrar-srv"
+SERVICE_SEARCH="osc-dm-search-srv"
 
 #####
 # STARTUP

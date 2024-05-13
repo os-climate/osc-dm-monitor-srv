@@ -17,7 +17,7 @@ if [ -z ${HOME_DIR+x} ] ; then
 fi
 
 export ROOT_DIR="$HOME_DIR"
-export PROJECT="bgs-dm-monitor-srv"
+export PROJECT="osc-dm-monitor-srv"
 export PROJECT_DIR="$ROOT_DIR/$PROJECT"
 
 $PROJECT_DIR/bin/show.sh

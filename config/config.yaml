@@ -2,5 +2,5 @@ monitor:
   interval_seconds: 5
 
 proxy:
-  host: "bgs-dm-proxy-srv"
+  host: "osc-dm-proxy-srv"
   port: 8000
