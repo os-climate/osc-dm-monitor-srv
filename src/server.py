@@ -6,17 +6,19 @@
 #
 # Created:  2024-04-15 by eric.broda@brodagroupsoftware.com
 
+import asyncio
+
 # Library imports
 import logging
 
 import uvicorn as uvicorn
-from fastapi import FastAPI, HTTPException
 import yaml
-import asyncio
+from fastapi import FastAPI, HTTPException
+
+import state
 
 # Project imports
 import utilities
-import state
 
 # Set up logging
 LOGGING_FORMAT = \

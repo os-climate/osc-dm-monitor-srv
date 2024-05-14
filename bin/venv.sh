@@ -24,6 +24,6 @@ function showHelp {
 }
 
 # Create the virtual environment in a directory called
-cd $PROJECT_DIR
+cd "$PROJECT_DIR" || exit
 NAME="venv"
 python3 -m venv $NAME

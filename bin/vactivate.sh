@@ -34,10 +34,11 @@ fi
 VENV_NAME="venv"
 if [[ "$OSTYPE" == "msys" ]]; then
     # For Ms/Windows
-    source $PROJECT_DIR/$VENV_NAME/Scripts/activate
+    # shellcheck disable=SC1090
+    source "$PROJECT_DIR/$VENV_NAME/Scripts/activate"
 else
     # For Linux/MacOS
-    source $PROJECT_DIR/$VENV_NAME/bin/activate
+    # shellcheck disable=SC1090
+    source "$PROJECT_DIR/$VENV_NAME/bin/activate"
 fi
 echo "Activated virtual environment: $VENV_NAME"
-

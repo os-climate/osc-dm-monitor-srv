@@ -6,9 +6,10 @@
 #
 # Created:  2024-04-15 by eric.broda@brodagroupsoftware.com
 
-from typing import List, Optional, Dict, Any
-import httpx
 import logging
+from typing import Any, Dict, List, Optional
+
+import httpx
 
 from bgsexception import BgsException, BgsNotFoundException
 
