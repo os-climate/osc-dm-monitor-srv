@@ -1,6 +1,6 @@
 [project]
 name = "osc-dm-monitor-srv"
-version = "v0.1.1"
+dynamic = ["version"]
 description = "Ecosystem Platform Monitor."
 authors = [
   { name = "Eric Broda", email = "93649628+ModeSevenIndustrialSolutions@users.noreply.github.com" },
@@ -71,7 +71,7 @@ dependencies = [
 
 [tool.setuptools.package-data]
 itr = [
-      "py.typed"
+      "py.typed", "types-PyYAML"
       ]
 
 [project.urls]
@@ -83,7 +83,7 @@ Documentation = "https://github.com/brodagroupsoftware/osc-dm-mesh-doc"
 "Source Code" = "https://github.com/os-climate/osc-dm-monitor-srv"
 
 [build-system]
-requires = ["pdm-backend"]
+requires = ["pdm-backend", "types-PyYAML"]
 build-backend = "pdm.backend"
 
 [tool.pdm.scripts]

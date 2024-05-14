@@ -17,7 +17,7 @@ if [ -z ${ROOT_DIR+x} ] ; then
 fi
 
 # Show the environment
-$PROJECT_DIR/bin/show.sh
+"$PROJECT_DIR"/bin/show.sh
 
 usage() {
     echo " "
@@ -39,14 +39,14 @@ echo "HOSTNAME:     $HOSTNAME      <--- This is the hostname running in docker"
 echo " "
 
 NETWORK_NAME="localnet"
-docker network create $NETWORK_NAME
+docker network create "$NETWORK_NAME"
 
 compose() {
-  docker-compose -f $PROJECT_DIR/docker/docker-compose.yml up
+    docker-compose -f "$PROJECT_DIR"/docker/docker-compose.yml up
 }
 
 decompose() {
-  docker-compose -f $PROJECT_DIR/docker/docker-compose.yml down
+    docker-compose -f "$PROJECT_DIR"/docker/docker-compose.yml down
 }
 
 compose;

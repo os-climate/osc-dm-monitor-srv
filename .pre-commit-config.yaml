@@ -127,7 +127,7 @@ repos:
     hooks:
       - id: mypy
         verbose: true
-        args: [--show-error-codes]
+        args: ["--show-error-codes", "--install-types", "--non-interactive"]
         additional_dependencies: ["pytest", "types-requests"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
