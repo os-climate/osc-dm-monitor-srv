@@ -1,3 +1,11 @@
+
+# Temporary directories
+tmp/
+rawdata/
+
+# Other stuff
+*.iml
+
 # Temporary devops repo
 .devops
 
@@ -16,18 +24,37 @@ node_modules
 credentials.env
 config.toml
 
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
+
+
 .idea/*
 *.iml
+
 
 # C extensions
 *.so
 
 # Distribution / packaging
+
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Compiled Python files
+*.pyc
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Environment and virtualenv files
+
 .Python
 .pdm-python
 .pdm-build
@@ -136,6 +163,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+
 .env
 .venv
 env/
@@ -143,6 +171,25 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+
+# macOS specific files
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Testing
+htmlcov/
+.tox/
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+.coverage.*
+
 examples/itr_ui/
 itr_env/
 
