@@ -17,6 +17,7 @@ import asyncio
 # Project imports
 import utilities
 import state
+from middleware import LoggingMiddleware
 
 # Set up logging
 LOGGING_FORMAT = \
@@ -25,7 +26,8 @@ logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
 logger = logging.getLogger(__name__)
 
 # Constants
-ENDPOINT_PREFIX = "/api/monitor"
+ENDPOINT_MONITOR = "/monitor"
+ENDPOINT_PREFIX = "/api" + ENDPOINT_MONITOR
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 8000
 DEFAULT_CONFIGURATION="./config/config.yaml"
@@ -35,6 +37,7 @@ STATE_STATISTICS="state-statistics"
 
 SERVICE_REGISTRAR="osc-dm-registrar-srv"
 SERVICE_SEARCH="osc-dm-search-srv"
+SERVICE_PROXY="osc-dm-proxy-srv"
 
 #####
 # STARTUP
@@ -42,6 +45,7 @@ SERVICE_SEARCH="osc-dm-search-srv"
 
 # Set up server
 app = FastAPI()
+app.add_middleware(LoggingMiddleware)
 
 @app.on_event("startup")
 async def startup_event():
@@ -61,10 +65,19 @@ async def startup_event():
 #####
 
 
-@app.get(ENDPOINT_PREFIX + "/status")
-async def status_get():
+@app.get(ENDPOINT_PREFIX + "/health")
+async def health_get():
     """
-    Get observed status information
+    Return health information
+    """
+    statistics = state.gstate(STATE_STATISTICS)
+    return statistics
+
+
+@app.get(ENDPOINT_PREFIX + "/metrics")
+async def health_get():
+    """
+    Return health information
     """
     statistics = state.gstate(STATE_STATISTICS)
     return statistics
@@ -86,9 +99,10 @@ async def _task(param1, param2):
     configuration = state.gstate(STATE_CONFIGURATION)
     host = configuration["proxy"]["host"]
     port = configuration["proxy"]["port"]
-    service = "/api/registration/products"
+    service = "/api/registrar/products"
     method = "GET"
 
+    # Get all known products from registrar
     response = None
     try:
         logger.info("Get products")
@@ -97,27 +111,30 @@ async def _task(param1, param2):
     except Exception as e:
         logger.error(f"Error getting product information, exception:{e}")
 
+    # Get addresses for all products and add to
     if response:
         products = response
         for product in products:
             logger.info(f"Using product:{product}")
             address = product["address"]
             uuid = product["uuid"]
-            endpoint = f"/api/discovery/uuid/{uuid}"
-            statistics[address] = { "endpoint": endpoint, "status": "UNKNOWN"}
+            endpoint = f"/api/dataproducts/uuid/{uuid}"
+            statistics[address] = { "endpoint": endpoint, "health": "UNKNOWN"}
 
-    logger.info(f"Using statistics:{statistics}")
+    # Get info (health and metrics) from each service and data product
+    logger.info(f"Current statistics:{statistics}")
     for name in statistics:
         try:
             logger.info(f"Getting status name:{name} info:{statistics[name]}")
             service = statistics[name]["endpoint"]
             method = "GET"
             response = await utilities.httprequest(host, port, service, method)
-            statistics[name]["status"] = "UP"
+            statistics[name]["health"] = "OK"
             logger.info(f"Getting status name:{name} SUCCESS (UP)")
         except Exception as e:
             logger.error(f"Error getting status name:{name} info:{statistics[name]}, exception:{e}")
-            statistics[name]["status"] = "DOWN"
+            statistics[name]["health"] = "NOT-OK"
+    logger.info(f"Full statistics:{statistics}")
 
 
 async def _repeat_every(interval_sec, func, *args):
@@ -160,8 +177,9 @@ if __name__ == "__main__":
     state.gstate(STATE_CONFIGURATION, configuration)
 
     statistics = {
-        SERVICE_REGISTRAR: {"endpoint": "/api/registration/status", "status": "UNKNOWN" },
-        SERVICE_SEARCH: {"endpoint": "/api/search/status", "status": "UNKNOWN" }
+        SERVICE_PROXY: {"endpoint": "/api/proxy/health", "health": "UNKNOWN" },
+        SERVICE_REGISTRAR: {"endpoint": "/api/registrar/health", "health": "UNKNOWN" },
+        SERVICE_SEARCH: {"endpoint": "/api/search/health", "health": "UNKNOWN" }
     }
     state.gstate(STATE_STATISTICS, statistics)
 
