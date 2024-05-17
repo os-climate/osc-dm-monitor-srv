@@ -18,16 +18,16 @@ POSITIONAL_ARGS=()
 PUBLISH="false" # default value
 
 while [[ $# -gt 0 ]]; do
-  POSITIONAL_ARGS+=("$1")
-  case $1 in
+    POSITIONAL_ARGS+=("$1")
+    case $1 in
     -p|--publish)
-      PUBLISH="true"
-      shift #move past arg
-      ;;
+        PUBLISH="true"
+        shift #move past arg
+        ;;
     *) # ignore other args
-      shift
-      ;;
-  esac
+        shift
+        ;;
+    esac
 done
 
 function showHelp {
@@ -75,9 +75,9 @@ echo " "
 
 prepare() {
     echo "Preparing..."
-    cp $PROJECT_DIR/requirements.txt $WORKING_DIR
-    cp $PROJECT_DIR/docker/Dockerfile $WORKING_DIR
-    cp $PROJECT_DIR/src/*.py $WORKING_DIR
+    cp "$PROJECT_DIR/requirements.txt" "$WORKING_DIR"
+    cp "$PROJECT_DIR/docker/Dockerfile" "$WORKING_DIR"
+    cp "$PROJECT_DIR/src/*.py" "$WORKING_DIR"
 }
 
 cleanup() {
@@ -93,7 +93,7 @@ build() {
     echo "Building Docker image $IMAGE_NAME:$VERSION"
     echo "Images built using version $VERSION and latest"
 
-    docker build --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+    docker build --build-arg GITHUB_TOKEN="$GITHUB_TOKEN" \
         -t "$IMAGE_NAME:$VERSION" \
         -t "$IMAGE_NAME:latest" \
         -f Dockerfile . \
@@ -101,61 +101,61 @@ build() {
 }
 
 dockerhub_login() {
-  echo "logging in to docker hub with username $DOCKERHUB_USERNAME"
-  docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
-  LOGIN_RETURN=$?
+    echo "logging in to docker hub with username $DOCKERHUB_USERNAME"
+    docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
+    LOGIN_RETURN=$?
 
-  if [[ $LOGIN_RETURN -eq 0 ]]; then
-    echo "Successfully logged into dockerhub as $DOCKERHUB_USERNAME"
-    return 0
-  else
-    echo "Could not log into dockerhub as $DOCKERHUB_USERNAME"
-    return 1
-   fi
+    if [[ "$LOGIN_RETURN" -eq 0 ]]; then
+        echo "Successfully logged into dockerhub as $DOCKERHUB_USERNAME"
+        return 0
+    else
+        echo "Could not log into dockerhub as $DOCKERHUB_USERNAME"
+        return 1
+    fi
 }
 
 dockerhub_logout() {
-  echo "logging out from dockerhub"
-  docker logout
-  LOGOUT_RETURN=$?
-  if [[ $LOGOUT_RETURN -eq 0 ]]; then
-    echo "Successfully logged out of dockerhub"
-  else
-    echo "problem occurred logging out of dockerhub!"
-  fi
+    echo "logging out from dockerhub"
+    docker logout
+    LOGOUT_RETURN=$?
+    if [[ "$LOGOUT_RETURN" -eq 0 ]]; then
+        echo "Successfully logged out of dockerhub"
+    else
+        echo "problem occurred logging out of dockerhub!"
+    fi
 }
 
 publish() {
-  echo "Pushing image to DockerHub"
-  docker push "$IMAGE_NAME"
-  DOCKER_RETURN=$?
+    echo "Pushing image to DockerHub"
+    docker push "$IMAGE_NAME"
+    DOCKER_RETURN=$?
 
-  if [[ $DOCKER_RETURN -eq 0 ]]; then
-    echo "Image successfully published!"
-  else
-    echo "Attempt to publish docker image failed!"
-  fi
+    if [[ "$DOCKER_RETURN" -eq 0 ]]; then
+        echo "Image successfully published!"
+    else
+        echo "Attempt to publish docker image failed!"
+    fi
 }
 
 echo "Changing directory to sandbox directory ($WORKING_DIR)"
 mkdir -p "$WORKING_DIR"
-cd "$WORKING_DIR"
+cd "$WORKING_DIR" || exit
 
 prepare;
 cleanup;
 build;
 
 if [[ "$PUBLISH" == "true" ]]; then
-  dockerhub_login;
-  PUBLISH_LOGIN_SUCCESS=$?
-   if [[ $PUBLISH_LOGIN_SUCCESS -eq 0 ]]; then
-       publish;
-  else
-    echo "Not publishing due to login failure"
-    dockerhub_logout;
-    exit 1
-  fi
+    dockerhub_login;
+    PUBLISH_LOGIN_SUCCESS=$?
+    if [[ "$PUBLISH_LOGIN_SUCCESS" -eq 0 ]]; then
+        publish;
+    else
+        echo "Not publishing due to login failure"
+        dockerhub_logout;
+        exit 1
+    fi
 
-  dockerhub_logout;
-  exit 0
+    dockerhub_logout;
+    exit 0
 fi

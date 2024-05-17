@@ -20,4 +20,4 @@ export ROOT_DIR="$HOME_DIR"
 export PROJECT="osc-dm-monitor-srv"
 export PROJECT_DIR="$ROOT_DIR/$PROJECT"
 
-$PROJECT_DIR/bin/show.sh
+"$PROJECT_DIR"/bin/show.sh
