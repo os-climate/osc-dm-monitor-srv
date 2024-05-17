@@ -1,8 +1,9 @@
-import logging
-from fastapi import Request, Response, Depends
 import base64
+import logging
+
+from fastapi import Depends, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse, StreamingResponse, PlainTextResponse
+from starlette.responses import JSONResponse, PlainTextResponse, StreamingResponse
 
 import state
 
@@ -66,8 +67,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         return response
 
-from starlette.types import Send, Message
 import asyncio
+
+from starlette.types import Message, Send
+
 
 class LoggingStreamingResponse(StreamingResponse):
     def __init__(self, *args, **kwargs):

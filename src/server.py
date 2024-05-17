@@ -19,9 +19,7 @@ import state
 
 # Project imports
 import utilities
-import state
 from middleware import LoggingMiddleware
-
 
 # Set up logging
 LOGGING_FORMAT = \
