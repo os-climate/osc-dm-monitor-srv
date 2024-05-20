@@ -32,14 +32,20 @@ ENDPOINT_MONITOR = "/monitor"
 ENDPOINT_PREFIX = "/api" + ENDPOINT_MONITOR
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 8000
-DEFAULT_CONFIGURATION="./config/config.yaml"
+DEFAULT_CONFIGURATION = "./config/config.yaml"
 
-STATE_CONFIGURATION="state-configuration"
-STATE_STATISTICS="state-statistics"
+STATE_CONFIGURATION = "state-configuration"
+STATE_METRICS = "state-statistics"
+STATE_HEALTH = "state-health"
+STATE_ADDRESSES = "state-addresses"
 
-SERVICE_REGISTRAR="osc-dm-registrar-srv"
-SERVICE_SEARCH="osc-dm-search-srv"
-SERVICE_PROXY="osc-dm-proxy-srv"
+SERVICE_REGISTRAR = "osc-dm-registrar-srv"
+SERVICE_SEARCH = "osc-dm-search-srv"
+SERVICE_PROXY = "osc-dm-proxy-srv"
+
+HEADER_USERNAME = "OSC-DM-Username"
+HEADER_CORRELATION_ID = "OSC-DM-Correlation-ID"
+USERNAME = "osc-dm-search-srv"
 
 #####
 # STARTUP
@@ -58,7 +64,12 @@ async def startup_event():
     logger.info("Running startup event")
     param1 = "fake param 1"
     param2 = "fake param 2"
+
+    logger.info("Running task immediately...")
     await _task(param1, param2)  # Immediate invocation at startup
+
+    interval = configuration["monitor"]["interval_seconds"]
+    logger.info(f"Running task interval (seconds):{interval}")
     asyncio.create_task(_repeat_every(configuration["monitor"]["interval_seconds"], _task, param1, param2))  # Periodic invocation
 
 
@@ -72,17 +83,17 @@ async def health_get():
     """
     Return health information
     """
-    statistics = state.gstate(STATE_STATISTICS)
+    statistics = state.gstate(STATE_HEALTH)
     return statistics
 
 
 @app.get(ENDPOINT_PREFIX + "/metrics")
-async def health_get():
+async def metrics_get():
     """
-    Return health information
+    Return metrics information
     """
-    statistics = state.gstate(STATE_STATISTICS)
-    return statistics
+    metrics = state.gstate(STATE_METRICS)
+    return metrics
 
 
 #####
@@ -96,7 +107,9 @@ async def _task(param1, param2):
     """
     logger.info(f"Executing task param1:{param1} param2:{param2}")
 
-    statistics = state.gstate(STATE_STATISTICS)
+    health = state.gstate(STATE_HEALTH)
+    metrics = state.gstate(STATE_METRICS)
+    addresses = state.gstate(STATE_ADDRESSES)
 
     configuration = state.gstate(STATE_CONFIGURATION)
     host = configuration["proxy"]["host"]
@@ -108,12 +121,17 @@ async def _task(param1, param2):
     response = None
     try:
         logger.info("Get products")
-        response = await utilities.httprequest(host, port, service, method)
+        import uuid
+        headers = {
+            HEADER_USERNAME: USERNAME,
+            HEADER_CORRELATION_ID: str(uuid.uuid4())
+        }
+        response = await utilities.httprequest(host, port, service, method, headers=headers)
         logger.info("Get products SUCCESS")
     except Exception as e:
         logger.error(f"Error getting product information, exception:{e}")
 
-    # Get addresses for all products and add to
+    # Get address for all health checks and add to addresses to check
     if response:
         products = response
         for product in products:
@@ -121,22 +139,46 @@ async def _task(param1, param2):
             address = product["address"]
             uuid = product["uuid"]
             endpoint = f"/api/dataproducts/uuid/{uuid}"
-            statistics[address] = { "endpoint": endpoint, "health": "UNKNOWN"}
+            addresses[address] = endpoint
 
-    # Get info (health and metrics) from each service and data product
-    logger.info(f"Current statistics:{statistics}")
-    for name in statistics:
+    # Get info (health) from each service and data product
+    logger.info(f"Current health:{health}")
+    for address in addresses:
         try:
-            logger.info(f"Getting status name:{name} info:{statistics[name]}")
-            service = statistics[name]["endpoint"]
+            logger.info(f"Getting health address:{address}")
+            service = addresses[address] + "/health"
             method = "GET"
-            response = await utilities.httprequest(host, port, service, method)
-            statistics[name]["health"] = "OK"
-            logger.info(f"Getting status name:{name} SUCCESS (UP)")
+            import uuid
+            headers = {
+                HEADER_USERNAME: USERNAME,
+                HEADER_CORRELATION_ID: str(uuid.uuid4())
+            }
+            response = await utilities.httprequest(host, port, service, method, headers=headers)
+            health[address] = "OK"
+            logger.info(f"Successful getting health address:{address} response:{response}")
         except Exception as e:
-            logger.error(f"Error getting status name:{name} info:{statistics[name]}, exception:{e}")
-            statistics[name]["health"] = "NOT-OK"
-    logger.info(f"Full statistics:{statistics}")
+            logger.error(f"Error getting health address:{address}, exception:{e}")
+            health[address] = "NOT-OK"
+    logger.info(f"Full health:{health}")
+
+    # Get info (metrics) from each service and data product
+    logger.info(f"Current metrics:{metrics}")
+    for address in addresses:
+        try:
+            logger.info(f"Getting metrics address:{address}")
+            service = addresses[address] + "/metrics"
+            method = "GET"
+            headers = {
+                HEADER_USERNAME: USERNAME,
+                HEADER_CORRELATION_ID: str(uuid.uuid4())
+            }
+            response = await utilities.httprequest(host, port, service, method, headers=headers)
+            metrics[address] = response
+            logger.info(f"Successful getting metrics address:{address} response:{response}")
+        except Exception as e:
+            logger.error(f"Error getting metrics address:{address}, exception:{e}")
+            metrics[address] = "NOT-AVAILABLE"
+    logger.info(f"Full metrics:{metrics}")
 
 
 async def _repeat_every(interval_sec, func, *args):
@@ -147,6 +189,8 @@ async def _repeat_every(interval_sec, func, *args):
     while True:
         await func(*args)
         await asyncio.sleep(interval_sec)
+
+
 
 
 #####
@@ -178,19 +222,32 @@ if __name__ == "__main__":
     logger.info(f"Configuration:{configuration}")
     state.gstate(STATE_CONFIGURATION, configuration)
 
-    statistics = {
-        SERVICE_PROXY: {"endpoint": "/api/proxy/health", "health": "UNKNOWN" },
-        SERVICE_REGISTRAR: {"endpoint": "/api/registrar/health", "health": "UNKNOWN" },
-        SERVICE_SEARCH: {"endpoint": "/api/search/health", "health": "UNKNOWN" }
+    addresses = {
+        SERVICE_PROXY: "/api/proxy",
+        SERVICE_REGISTRAR: "/api/registrar",
+        SERVICE_SEARCH: "/api/search",
     }
-    state.gstate(STATE_STATISTICS, statistics)
+    state.gstate(STATE_ADDRESSES, addresses)
 
+    health = {
+        SERVICE_PROXY: "UNKNOWN",
+        SERVICE_REGISTRAR: "UNKNOWN",
+        SERVICE_SEARCH: "UNKNOWN",
+    }
+    state.gstate(STATE_HEALTH, health)
+
+    metrics = {
+        SERVICE_PROXY: {},
+        SERVICE_REGISTRAR: {},
+        SERVICE_SEARCH: {},
+    }
+    state.gstate(STATE_METRICS, metrics)
 
     # Start the server
     try:
-        logger.info(f"STARTING service on host:{args.host} port:{args.port}")
+        logger.info(f"Startingservice on host:{args.host} port:{args.port}")
         uvicorn.run(app, host=args.host, port=args.port)
     except Exception as e:
-        logger.info(f"STOPPING service, exception:{e}")
+        logger.info(f"Stopping service, exception:{e}")
     finally:
-        logger.info(f"TERMINATING service on host:{args.host} port:{args.port}")
+        logger.info(f"Terminating service")
