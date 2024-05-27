@@ -1,11 +1,12 @@
-import logging
-from fastapi import Request
 import base64
+import logging
+import uuid
+
+from fastapi import Request
+from starlette.datastructures import MutableHeaders
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import StreamingResponse
 from starlette.types import Send
-from starlette.datastructures import MutableHeaders
-import uuid
 
 import state
 
