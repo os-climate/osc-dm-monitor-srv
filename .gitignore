@@ -1,13 +1,5 @@
-
-# Temporary directories
-tmp/
-rawdata/
-
-# Other stuff
-*.iml
-
 # Temporary devops repo
-.devops
+/.devops
 
 # Twine temporary files
 package-lock.json
@@ -24,37 +16,18 @@ node_modules
 credentials.env
 config.toml
 
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-
-
 .idea/*
 *.iml
-
 
 # C extensions
 *.so
 
 # Distribution / packaging
-
-dist/
-build/
-*.egg-info/
-*.egg
-
-# Compiled Python files
-*.pyc
-
-# IDE specific files
-.idea/
-.vscode/
-
-# Environment and virtualenv files
-
 .Python
 .pdm-python
 .pdm-build
@@ -130,8 +103,8 @@ instance/
 docs/_build/
 
 # PyBuilder
-.pybuilder/
-target/
+/.pybuilder/
+/target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -163,7 +136,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-
 .env
 .venv
 env/
@@ -171,25 +143,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-
-# macOS specific files
-.DS_Store
-
-# Jupyter Notebook
-.ipynb_checkpoints/
-
-# Testing
-htmlcov/
-.tox/
-
-# Pytest
-.pytest_cache/
-
-# Coverage
-.coverage
-.coverage.*
-
 examples/itr_ui/
 itr_env/
 
