@@ -17,6 +17,7 @@ HEADER_USERNAME = "OSC-DM-Username"
 HEADER_CORRELATION_ID = "OSC-DM-Correlation-ID"
 USERNAME_UNKNOWN = "unknown"
 
+
 class LoggingMiddleware(BaseHTTPMiddleware):
     """
     FastAPI middleware is used to add processing to
@@ -156,6 +157,7 @@ class _LoggingStreamingResponse(StreamingResponse):
     @property
     def body(self):
         return b"".join(self.body_chunks).decode("utf-8")
+
 
 def _safe_decode(data):
     try:

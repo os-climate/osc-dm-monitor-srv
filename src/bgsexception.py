@@ -10,6 +10,7 @@ class BgsException(Exception):
         super().__init__(message)
         self.original_exception = original_exception
 
+
 class BgsNotFoundException(BgsException):
     """
     Not Found Exception

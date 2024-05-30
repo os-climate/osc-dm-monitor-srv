@@ -7,19 +7,20 @@
 # Created:  2024-04-15 by eric.broda@brodagroupsoftware.com
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 
-from bgsexception import BgsException, BgsNotFoundException
+from bgsexception import BgsException
 
 LOGGING_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
 logger = logging.getLogger(__name__)
 
+
 async def httprequest(host: str, port: int, service: str, method: str,
-             data: Optional[Any]=None, obj: Optional[Dict]=None,
-             files: Optional[Any]=None, headers: Optional[Dict]=None) -> Any:
+                      data: Optional[Any] = None, obj: Optional[Dict] = None,
+                      files: Optional[Any] = None, headers: Optional[Dict] = None) -> Any:
     """
     Generic request function using the ASYNC httpx library.
 
@@ -79,9 +80,10 @@ async def httprequest(host: str, port: int, service: str, method: str,
         logger.error(msg)
         raise BgsException(msg)
 
+
 def shttprequest(host: str, port: int, service: str, method: str,
-             data: Optional[Any]=None, obj: Optional[Dict]=None,
-             files: Optional[Any]=None, headers: Optional[Dict]=None) -> Any:
+                 data: Optional[Any] = None, obj: Optional[Dict] = None,
+                 files: Optional[Any] = None, headers: Optional[Dict] = None) -> Any:
     """
     Generic request function using the SYNCHRONOUS requests library.
 

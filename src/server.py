@@ -13,7 +13,7 @@ import logging
 
 import uvicorn as uvicorn
 import yaml
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 import state
 
@@ -54,6 +54,7 @@ USERNAME = "osc-dm-search-srv"
 # Set up server
 app = FastAPI()
 app.add_middleware(LoggingMiddleware)
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -191,8 +192,6 @@ async def _repeat_every(interval_sec, func, *args):
         await asyncio.sleep(interval_sec)
 
 
-
-
 #####
 # MAINLINE
 #####
@@ -250,4 +249,4 @@ if __name__ == "__main__":
     except Exception as e:
         logger.info(f"Stopping service, exception:{e}")
     finally:
-        logger.info(f"Terminating service")
+        logger.info("Terminating service")
