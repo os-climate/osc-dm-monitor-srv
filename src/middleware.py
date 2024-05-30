@@ -1,11 +1,12 @@
-import logging
-from fastapi import Request
 import base64
+import logging
+import uuid
+
+from fastapi import Request
+from starlette.datastructures import MutableHeaders
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import StreamingResponse
 from starlette.types import Send
-from starlette.datastructures import MutableHeaders
-import uuid
 
 import state
 
@@ -15,6 +16,7 @@ STATE_METRICS = "state-metrics"
 HEADER_USERNAME = "OSC-DM-Username"
 HEADER_CORRELATION_ID = "OSC-DM-Correlation-ID"
 USERNAME_UNKNOWN = "unknown"
+
 
 class LoggingMiddleware(BaseHTTPMiddleware):
     """
@@ -155,6 +157,7 @@ class _LoggingStreamingResponse(StreamingResponse):
     @property
     def body(self):
         return b"".join(self.body_chunks).decode("utf-8")
+
 
 def _safe_decode(data):
     try:

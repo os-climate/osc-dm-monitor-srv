@@ -12,7 +12,8 @@ Dictionary containing global state
 """
 global_state = {}
 
-def gstate(name: str, value: any=None):
+
+def gstate(name: str, value: any = None):
     """
     Global state manager for registration state
 
