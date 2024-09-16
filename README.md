@@ -81,7 +81,7 @@ In order to publish this image the `DOCKER_TOKEN` environment variable
 must be set to a dockerhub token that is associated with the username set in the
 `DOCKER_USERNAME` environment variable. Additionally, the
 `DOCKER_REGISTRY` environment variable must be set if publishing
-to a custom registry. 
+to a custom registry.
 
 Then the below command can be executed to create and publish an image,
 with the `--publish` argument controlling whether the image is published,
