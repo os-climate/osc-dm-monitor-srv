@@ -24,7 +24,7 @@ repos:
         entry: scripts/tomllint.sh .
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -60,7 +60,7 @@ repos:
 
   # Lint: Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.41.0
+    rev: v0.45.0
     hooks:
       - id: markdownlint
         args: ["--fix"]
@@ -88,7 +88,7 @@ repos:
         args: ["--ignore=E006,E011"]
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
 
@@ -99,31 +99,31 @@ repos:
         additional_dependencies: ["tomli"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 6.0.1
     hooks:
       - id: isort
         args: ["--profile", "black"]
 
   - repo: https://github.com/Mateusz-Grzelinski/actionlint-py
-    rev: v1.7.0.14
+    rev: v1.7.7.24
     hooks:
       - id: actionlint
 
   - repo: https://github.com/pycqa/flake8
-    rev: "7.0.0"
+    rev: "7.3.0"
     hooks:
       - id: flake8
         additional_dependencies:
         - pep8-naming
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.35.1
+    rev: v1.37.1
     hooks:
       - id: yamllint
         args: [ "-d", "{rules: {line-length: {max: 120}}, ignore-from-file: [.gitignore],}", ]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.10.0"
+    rev: "v1.17.1"
     hooks:
       - id: mypy
         verbose: true
@@ -131,7 +131,7 @@ repos:
         additional_dependencies: ["pytest", "types-requests"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.12.12
     hooks:
       - id: ruff
         files: ^(scripts|tests|custom_components)/.+\.py$
