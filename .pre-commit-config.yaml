@@ -99,7 +99,7 @@ repos:
         additional_dependencies: ["tomli"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 6.0.1
+    rev: 6.1.0
     hooks:
       - id: isort
         args: ["--profile", "black"]
@@ -131,7 +131,7 @@ repos:
         additional_dependencies: ["pytest", "types-requests"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.1
+    rev: v0.13.3
     hooks:
       - id: ruff
         files: ^(scripts|tests|custom_components)/.+\.py$
